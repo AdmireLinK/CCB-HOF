@@ -77,6 +77,8 @@ onMounted(() => {
     t.finalResults.slice(1,8).forEach(res => {
       const key = `${t.name}::${res.name}`
       logoLoadedSmall.value[key] = false
+      // 初始化 mini avatar index
+      currentAvatarIndices.value[key] = currentAvatarIndices.value[key] || 0
     })
   })
 
@@ -93,6 +95,17 @@ onMounted(() => {
           currentAvatarIndices.value[key] = (currentIndex + 1) % champion.players.length
         }
       }
+    })
+    // 同时为结果列表中的团队小头像轮播
+    tournaments.forEach(t => {
+      t.finalResults.slice(1,8).forEach(res => {
+        if (res.players && res.players.length > 1) {
+          const rkey = `${t.name}::${res.name}`
+          logoLoadedSmall.value[rkey] = false
+          const cur = currentAvatarIndices.value[rkey] || 0
+          currentAvatarIndices.value[rkey] = (cur + 1) % res.players.length
+        }
+      })
     })
   }, 6000) // 延长到 6000ms
 })
@@ -170,6 +183,9 @@ const getRankIcon = (rank: string) => {
               <span class="globe-icon">🏆</span> CHAMPIONS
             </div>
             <h2 class="champion-name">{{ t.finalResults.find(r => r.rank === '1st' || r.rank === '冠军')?.name }}</h2>
+            <div v-if="(t.name.includes('天虹') || t.name.includes('Major')) && t.finalResults.find(r => r.rank === '1st' || r.rank === '冠军')?.players" class="team-members-champion">
+              {{ t.finalResults.find(r => r.rank === '1st' || r.rank === '冠军')?.players.join(' / ') }}
+            </div>
           </div>
 
           <!-- Results List -->
@@ -179,15 +195,27 @@ const getRankIcon = (rank: string) => {
                 <div class="rank-icon-small">{{ getRankIcon(res.rank) }}</div>
                 <div class="result-meta">
                   <span class="result-rank-label">{{ getRankLabel(res.rank) }}</span>
-                  <span class="result-player-name">{{ res.name }}</span>
+                        <span class="result-player-name">{{ res.name }}</span>
+                        <!-- 在指定赛事下显示队员名单 -->
+                        <div v-if="(t.name.includes('天虹') || t.name.includes('Major')) && res.players" class="team-members">
+                          {{ res.players.join(' / ') }}
+                        </div>
                 </div>
               </div>
-                      <img :key="(res.players && res.players[0] ? resolveAvatar(res.players[0]) : resolveAvatar(res.name)) + '_' + res.name"
-                        :src="(res.players && res.players[0]) ? resolveAvatar(res.players[0]) : resolveAvatar(res.name)"
-                        class="mini-avatar"
-                        :class="{ visible: logoLoadedSmall[`${t.name}::${res.name}`] }"
-                        @load="() => { logoLoadedSmall[`${t.name}::${res.name}`] = true }"
-                        :alt="`mini-${res.name}`" />
+                          <img v-if="res.players && res.players.length > 0"
+                            :key="resolveAvatar(res.players[currentAvatarIndices[`${t.name}::${res.name}`] || 0]) + '_' + res.name + '_' + (currentAvatarIndices[`${t.name}::${res.name}`] || 0)"
+                            :src="resolveAvatar(res.players[currentAvatarIndices[`${t.name}::${res.name}`] || 0])"
+                            class="mini-avatar"
+                            :class="{ visible: logoLoadedSmall[`${t.name}::${res.name}`] }"
+                            @load="() => { logoLoadedSmall[`${t.name}::${res.name}`] = true }"
+                            :alt="`mini-${res.name}`" />
+                          <img v-else
+                            :key="resolveAvatar(res.name) + '_' + res.name"
+                            :src="resolveAvatar(res.name)"
+                            class="mini-avatar"
+                            :class="{ visible: logoLoadedSmall[`${t.name}::${res.name}`] }"
+                            @load="() => { logoLoadedSmall[`${t.name}::${res.name}`] = true }"
+                            :alt="`mini-${res.name}`" />
             </div>
           </div>
         </div>
@@ -421,6 +449,20 @@ const getRankIcon = (rank: string) => {
   font-size: 15px;
   font-weight: 700;
   color: #eee;
+}
+
+.team-members {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.team-members-champion {
+  font-size: 13px;
+  color: #ddd;
+  margin-top: 8px;
+  font-weight: 700;
 }
 
 .mini-avatar {
