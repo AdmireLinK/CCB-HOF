@@ -149,24 +149,24 @@ export const tournaments: Tournament[] = [
         name: "胜者组第二轮",
         type: "Bracket",
         matches: [
-          { date: "8.15", map: 1, team1: { name: "八组", score: 27 }, team2: { name: "六组", score: 34 }, winner: 2 },
-          { date: "8.15", map: 2, team1: { name: "八组", score: 33 }, team2: { name: "六组", score: 19 }, winner: 1 },
-          { date: "8.15", map: 3, team1: { name: "八组", score: 30 }, team2: { name: "六组", score: 31 }, isOT: true, overtime: "4:2", winner: 2 },
-          { date: "8.16", map: 1, team1: { name: "二组", score: 34 }, team2: { name: "一组", score: 10 }, winner: 1 },
-          { date: "8.16", map: 2, team1: { name: "二组", score: 33 }, team2: { name: "一组", score: 18 }, winner: 1 }
+          { date: "8.15", map: 1, team1: { name: "八组",players: ["V.", "安格", "710"], score: 27 }, team2: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 34 }, winner: 2 },
+          { date: "8.15", map: 2, team1: { name: "八组",players: ["V.", "安格", "710"], score: 33 }, team2: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 19 }, winner: 1 },
+          { date: "8.15", map: 3, team1: { name: "八组",players: ["V.", "安格", "710"], score: 30 }, team2: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 31 }, isOT: true, overtime: "4:2", winner: 2 },
+          { date: "8.16", map: 1, team1: { name: "二组",players: ["Sakuya", "Sh1ro", "Sugar"], score: 34 }, team2: { name: "一组",players: ["Gura", "淮南皓月", "保科明里"], score: 10 }, winner: 1 },
+          { date: "8.16", map: 2, team1: { name: "二组",players: ["Sakuya", "Sh1ro", "Sugar"], score: 33 }, team2: { name: "一组",players: ["Gura", "淮南皓月", "保科明里"], score: 18 }, winner: 1 }
         ]
       },
       {
         name: "败者组第二轮",
         type: "Bracket",
         matches: [
-          { date: "8.17", map: 1, team1: { name: "六组", score: 35 }, team2: { name: "三组", score: 12 }, winner: 1 },
-          { date: "8.17", map: 2, team1: { name: "六组", score: 31 }, team2: { name: "三组", score: 32 }, isOT: true, overtime: "2:4", winner: 2 },
-          { date: "8.17", map: 3, team1: { name: "六组", score: 34 }, team2: { name: "三组", score: 28 }, winner: 1 },
-          { date: "8.17", map: 1, team1: { name: "七组", score: 34 }, team2: { name: "一组", score: 9 }, winner: 1 },
-          { date: "8.17", map: 2, team1: { name: "七组", score: 36 }, team2: { name: "一组", score: 21 }, winner: 1 },
-          { date: "8.17", map: 1, team1: { name: "七组", score: 35 }, team2: { name: "六组", score: 16 }, winner: 1 },
-          { date: "8.17", map: 2, team1: { name: "七组", score: 34 }, team2: { name: "六组", score: 21 }, winner: 1 }
+          { date: "8.17", map: 1, team1: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 35 }, team2: { name: "三组",players: ["Gura", "淮南皓月", "保科明里"], score: 12 }, winner: 1 },
+          { date: "8.17", map: 2, team1: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 31 }, team2: { name: "三组",players: ["Gura", "淮南皓月", "保科明里"], score: 32 }, isOT: true, overtime: "2:4", winner: 2 },
+          { date: "8.17", map: 3, team1: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 34 }, team2: { name: "三组",players: ["Gura", "淮南皓月", "保科明里"], score: 28 }, winner: 1 },
+          { date: "8.17", map: 1, team1: { name: "七组",players: ["切尔茜", "鲁迪乌斯", "Ryo"], score: 34 }, team2: { name: "一组",players: ["Gura", "淮南皓月", "保科明里"], score: 9 }, winner: 1 },
+          { date: "8.17", map: 2, team1: { name: "七组",players: ["切尔茜", "鲁迪乌斯", "Ryo"], score: 36 }, team2: { name: "一组",players: ["Gura", "淮南皓月", "保科明里"], score: 21 }, winner: 1 },
+          { date: "8.17", map: 1, team1: { name: "七组",players: ["切尔茜", "鲁迪乌斯", "Ryo"], score: 35 }, team2: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 16 }, winner: 1 },
+          { date: "8.17", map: 2, team1: { name: "七组",players: ["切尔茜", "鲁迪乌斯", "Ryo"], score: 34 }, team2: { name: "六组",players: ["75sp", "Shinon", "新条茜"], score: 21 }, winner: 1 }
         ]
       },
       {
