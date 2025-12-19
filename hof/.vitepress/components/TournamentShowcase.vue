@@ -47,25 +47,27 @@ const resolveAvatar = (name: string) => {
 }
 
 onMounted(() => {
-  // 为每个比赛单独请求一次背景图（fetch -> blob -> objectURL），不在 localStorage/Cache 中持久化
+  // 为每个比赛设置背景图 URL（直接使用远端 URL，并使用 Image 预加载以避免通过 fetch 触发 CORS）
   tournaments.forEach((t, idx) => {
-    ;(async () => {
-      const reqUrl = `${bgUrl}&t=${encodeURIComponent(t.name)}`
+    const reqUrl = `${bgUrl}&t=${encodeURIComponent(t.name)}`
+    setTimeout(() => {
+      // 直接使用远程 URL，让浏览器负责加载（避免 fetch 导致的 CORS 问题）
+      bgImages.value[t.name] = reqUrl
+
+      // 预加载以便尽快显示并捕获加载错误，若加载失败则回退到通用 bgUrl
       try {
-        await new Promise(r => setTimeout(r, idx * 120))
-        const resp = await fetch(reqUrl)
-        if (!resp.ok) throw new Error('bg fetch failed')
-        const blob = await resp.blob()
-        const url = URL.createObjectURL(blob)
-        // 释放旧的 objectURL（如果有）
-        if (bgImages.value[t.name] && bgImages.value[t.name].startsWith('blob:')) {
-          try { URL.revokeObjectURL(bgImages.value[t.name]) } catch (e) { /* ignore */ }
+        const img = new Image()
+        img.onload = () => {
+          /* loaded */
         }
-        bgImages.value[t.name] = url
-      } catch (err) {
+        img.onerror = () => {
+          bgImages.value[t.name] = `${bgUrl}&t=${encodeURIComponent(t.name)}`
+        }
+        img.src = reqUrl
+      } catch (e) {
         bgImages.value[t.name] = `${bgUrl}&t=${encodeURIComponent(t.name)}`
       }
-    })()
+    }, idx * 120)
   })
 
   // 初始化加载状态为 false，让首次 load 触发淡入
@@ -97,10 +99,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
-  // 释放所有创建的 object URLs
-  Object.values(bgImages.value).forEach(url => {
-    try { if (url && url.startsWith && url.startsWith('blob:')) URL.revokeObjectURL(url) } catch (e) { /* ignore */ }
-  })
+  // 清理定时器；不再使用 objectURL，因此无需 revoke
 })
 
 const getChampionAvatar = (tournament: any) => {
