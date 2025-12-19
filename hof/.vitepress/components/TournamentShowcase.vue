@@ -34,6 +34,12 @@ const resolveAvatar = (name: string) => {
       if (normalize(k).replace(/[’'`]/g, '') === alt) return `/avatar/${avatarMap[k]}`
     }
 
+    // 尝试通过包含关系匹配（例如 "切尔茜总冠军" -> "切尔茜"）
+    for (const k of Object.keys(avatarMap)) {
+      const kn = normalize(k)
+      if (normalize(name).includes(kn) || kn.includes(normalize(name))) return `/avatar/${avatarMap[k]}`
+    }
+
     return '/avatar/default.jpg'
   } catch (e) {
     return '/avatar/default.jpg'
@@ -209,12 +215,12 @@ const getRankIcon = (rank: string) => {
                   <span class="result-player-name">{{ res.name }}</span>
                 </div>
               </div>
-                  <img :key="resolveAvatar(res.name) + '_' + res.name"
-                    :src="resolveAvatar(res.name)"
-                    class="mini-avatar"
-                    :class="{ visible: logoLoadedSmall[`${t.name}::${res.name}`] }"
-                    @load="() => { logoLoadedSmall[`${t.name}::${res.name}`] = true }"
-                    :alt="`mini-${res.name}`" />
+                      <img :key="(res.players && res.players[0] ? resolveAvatar(res.players[0]) : resolveAvatar(res.name)) + '_' + res.name"
+                        :src="(res.players && res.players[0]) ? resolveAvatar(res.players[0]) : resolveAvatar(res.name)"
+                        class="mini-avatar"
+                        :class="{ visible: logoLoadedSmall[`${t.name}::${res.name}`] }"
+                        @load="() => { logoLoadedSmall[`${t.name}::${res.name}`] = true }"
+                        :alt="`mini-${res.name}`" />
             </div>
           </div>
         </div>

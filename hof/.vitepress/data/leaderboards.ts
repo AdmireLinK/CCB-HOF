@@ -53,6 +53,7 @@ export interface YearSummary {
 export const avatarMap: Record<string, string> = {
   "淮南皓月": "1160923758 淮南皓月.jpg",
   "ams": "1219205983 ams.jpg",
+  "爱梅斯": "1219205983 ams.jpg",
   "arisu": "1297672328 arisu.jpg",
   "lese": "1485571529 lese.jpg",
   "顶碗人": "1519059946 顶碗人.jpg",
