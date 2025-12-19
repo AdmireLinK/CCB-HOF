@@ -4,7 +4,7 @@
   },
   "scripts": {
     "dev": "vitepress dev hof",
-    "build": "vitepress build hof",
+    "build": "vitepress build hof && rm -rf dist && mv hof/.vitepress/dist dist",
     "preview": "vitepress preview hof"
   }
 }
