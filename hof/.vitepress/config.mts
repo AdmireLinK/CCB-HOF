@@ -19,7 +19,7 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: '名人堂',
+        text: '神人堂',
         items: [
           { text: '积分排行榜', link: '/leaderboard' },
           { text: '2025年度总结', link: '/hoc2025' },
