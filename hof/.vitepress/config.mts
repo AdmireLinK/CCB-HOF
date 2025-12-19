@@ -5,7 +5,11 @@ export default defineConfig({
   title: "猜猜呗孝子之璀璨榜",
   description: "Hall of Fame in Anime-character-guessr",
   head: [
-    ['link', { rel: 'icon', href: '/favicon.png' }]
+    ['link', { rel: 'icon', href: '/favicon.png' }],
+    // Fonts preconnect and stylesheet for Noto Sans SC / Noto Sans
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&family=Noto+Sans:wght@300;400;700;900&display=swap' }]
   ],
   themeConfig: {
     logo: '/favicon.png',

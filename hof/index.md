@@ -10,10 +10,17 @@ import TournamentShowcase from './.vitepress/components/TournamentShowcase.vue'
 <TournamentShowcase />
 
 <style>
+:root {
+  --font-sans: 'Noto Sans SC', 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
 /* 1. 基础背景设置：应用到页面根节点 */
 #app {
   background: #0a0a0a;
   min-height: 100vh; 
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 隐藏默认的 Hero 部分 */
