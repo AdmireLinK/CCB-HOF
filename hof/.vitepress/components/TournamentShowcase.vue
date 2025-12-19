@@ -41,20 +41,57 @@ const resolveAvatar = (name: string) => {
 }
 
 onMounted(() => {
-  // 为每个比赛单独请求一次背景图（fetch -> blob -> objectURL）
-  tournaments.forEach(async (t, idx) => {
-    try {
-      // 加上一个轻微的延迟避免并发过度冲突
-      await new Promise(r => setTimeout(r, idx * 120))
-      const resp = await fetch(bgUrl)
-      if (!resp.ok) throw new Error('bg fetch failed')
-      const blob = await resp.blob()
-      const url = URL.createObjectURL(blob)
-      bgImages.value[t.name] = url
-    } catch (err) {
-      // 回退到全局 url（可带时间戳以避免缓存）
-      bgImages.value[t.name] = `${bgUrl}&t=${encodeURIComponent(t.name)}`
-    }
+  // 为每个比赛单独请求一次背景图（先尝试 Cache，再回源获取并更新缓存）
+  const cacheName = 'tournament-bg-v1'
+  tournaments.forEach((t, idx) => {
+    ;(async () => {
+      const reqUrl = `${bgUrl}&t=${encodeURIComponent(t.name)}`
+      try {
+        // 如果支持 Cache API，先从 cache 读取以快速显示
+        if (typeof caches !== 'undefined') {
+          try {
+            const cache = await caches.open(cacheName)
+            const cached = await cache.match(reqUrl)
+            if (cached) {
+              const blob = await cached.blob()
+              const url = URL.createObjectURL(blob)
+              bgImages.value[t.name] = url
+            }
+
+            // 在后台回源获取最新图片并更新 cache 与显示
+            setTimeout(async () => {
+              try {
+                const resp = await fetch(reqUrl)
+                if (resp && resp.ok) {
+                  try { await cache.put(reqUrl, resp.clone()) } catch (e) { /* ignore put errors */ }
+                  const blob2 = await resp.blob()
+                  // 释放旧的 objectURL
+                  if (bgImages.value[t.name]) {
+                    try { URL.revokeObjectURL(bgImages.value[t.name]) } catch (e) { /* ignore */ }
+                  }
+                  bgImages.value[t.name] = URL.createObjectURL(blob2)
+                }
+              } catch (e) { /* network update failed */ }
+            }, idx * 120)
+            // 如果缓存命中则提前返回（后台更新仍会替换）；若无命中则继续走后续立即 fetch 路径以快速显示
+            if (cached) return
+          } catch (e) {
+            // cache usage failed, 回落到直接 fetch
+          }
+        }
+
+        // 不支持 Cache API 或发生错误时，直接 fetch 并设置
+        await new Promise(r => setTimeout(r, idx * 120))
+        const resp = await fetch(reqUrl)
+        if (!resp.ok) throw new Error('bg fetch failed')
+        const blob = await resp.blob()
+        const url = URL.createObjectURL(blob)
+        bgImages.value[t.name] = url
+      } catch (err) {
+        // 回退到全局 url（可带时间戳以避免缓存）
+        bgImages.value[t.name] = `${bgUrl}&t=${encodeURIComponent(t.name)}`
+      }
+    })()
   })
 
   // 初始化加载状态为 false，让首次 load 触发淡入
