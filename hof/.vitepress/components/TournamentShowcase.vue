@@ -25,19 +25,19 @@ const resolveAvatar = (name: string) => {
     // 尝试在 avatarMap 中通过规范化匹配 key
     for (const k of Object.keys(avatarMap)) {
       const kn = normalize(k).replace(/[^\p{L}\p{N}]/gu, '')
-      if (kn === target) return `/avatar/${avatarMap[k]}`
+      if (kn === target) return `/avatar/${encodeURIComponent(avatarMap[k])}`
     }
 
     // 变体尝试：去掉撇号或替换为常见形式
     const alt = normalize(name).replace(/[’'`]/g, '')
     for (const k of Object.keys(avatarMap)) {
-      if (normalize(k).replace(/[’'`]/g, '') === alt) return `/avatar/${avatarMap[k]}`
+      if (normalize(k).replace(/[’'`]/g, '') === alt) return `/avatar/${encodeURIComponent(avatarMap[k])}`
     }
 
     // 尝试通过包含关系匹配（例如 "切尔茜总冠军" -> "切尔茜"）
     for (const k of Object.keys(avatarMap)) {
       const kn = normalize(k)
-      if (normalize(name).includes(kn) || kn.includes(normalize(name))) return `/avatar/${avatarMap[k]}`
+      if (normalize(name).includes(kn) || kn.includes(normalize(name))) return `/avatar/${encodeURIComponent(avatarMap[k])}`
     }
 
     return '/avatar/default.jpg'
@@ -79,6 +79,58 @@ onMounted(() => {
       logoLoadedSmall.value[key] = false
       // 初始化 mini avatar index
       currentAvatarIndices.value[key] = currentAvatarIndices.value[key] || 0
+    })
+    // 初始化冠军 avatar index
+    currentAvatarIndices.value[t.name] = currentAvatarIndices.value[t.name] || 0
+  })
+
+  // 预加载所有需要的头像，确保首次显示时已加载（特别是 Shaw 等容易失败的头像）
+  tournaments.forEach(t => {
+    // champion
+    const champion = t.finalResults.find(r => r.rank === '1st' || r.rank === '冠军')
+    if (champion) {
+      let src = ''
+      if (t.type === 'Solo') {
+        src = resolveAvatar(champion.name)
+      } else {
+        const players = champion.players || []
+        src = players.length > 0 ? resolveAvatar(players[currentAvatarIndices.value[t.name] || 0]) : resolveAvatar(champion.name)
+      }
+      try {
+        const img = new Image()
+        img.onload = () => { logoLoaded.value[t.name] = true }
+        img.onerror = () => { logoLoaded.value[t.name] = true }
+        img.src = src
+      } catch (e) {
+        logoLoaded.value[t.name] = true
+      }
+    }
+
+    // results mini avatars
+    t.finalResults.slice(1,8).forEach(res => {
+      const key = `${t.name}::${res.name}`
+      if (res.players && res.players.length > 0) {
+        // preload first player's avatar
+        const src = resolveAvatar(res.players[0])
+        try {
+          const img = new Image()
+          img.onload = () => { logoLoadedSmall.value[key] = true }
+          img.onerror = () => { logoLoadedSmall.value[key] = true }
+          img.src = src
+        } catch (e) {
+          logoLoadedSmall.value[key] = true
+        }
+      } else {
+        const src = resolveAvatar(res.name)
+        try {
+          const img = new Image()
+          img.onload = () => { logoLoadedSmall.value[key] = true }
+          img.onerror = () => { logoLoadedSmall.value[key] = true }
+          img.src = src
+        } catch (e) {
+          logoLoadedSmall.value[key] = true
+        }
+      }
     })
   })
 

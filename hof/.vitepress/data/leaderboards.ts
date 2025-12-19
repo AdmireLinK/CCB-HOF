@@ -86,7 +86,7 @@ export const avatarMap: Record<string, string> = {
 };
 
 export const getAvatar = (name: string) => {
-  return avatarMap[name] ? `/avatar/${avatarMap[name]}` : '/avatar/default.jpg';
+  return avatarMap[name] ? `/avatar/${encodeURIComponent(avatarMap[name])}` : '/avatar/default.jpg';
 };
 
 // 2025年度总结TOP20
